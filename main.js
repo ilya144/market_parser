@@ -40,6 +40,24 @@ function getPrice(req, res, next) {
 	});
 }
 
+function getContent(req, res, next) {
+	const url = req.body.url;
+	if (url===null) {
+		res.send ({"response" : "error", "body" : "Url error"});
+		return 0;
+	}
+	request(url, function (error, response, body) {
+		if (error === null) {
+			res.send({"response" : "success",
+			 "data" : {"html" : body}})
+		} else {
+			res.send ({"response" : "error", "body" : error.toString()});
+		}
+		
+	});
+}
+
+
 var server = restify.createServer();
 
 server.use(restify.plugins.bodyParser());
@@ -47,7 +65,8 @@ server.use(restify.plugins.queryParser());
 
 server.get('/', render);
 server.post('/price', getPrice)
+server.post('/content', getContent)
 
-server.listen(8080, '0.0.0.0', function() {
+server.listen(8080,/* '0.0.0.0',*/ function() {
   console.log('%s listening at %s', server.name, server.url);
 });
